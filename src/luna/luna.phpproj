@@ -1,0 +1,233 @@
+"General"
+{
+"ProjectType" = "local"
+"AutoLoadTemplate" = "%s.php;class.%s.php;"
+"IncludeDirs" = ""
+"ProjectIdGuid" = "{78017666-E439-4488-B80A-CD8A4FBB16A6}"
+"ProjectVersion" = "2.7.4.5913"
+}
+"Configurations"
+{
+    "Local|PHP 5"
+    {
+    }
+    "Local|PHP 4"
+    {
+    }
+    "Remote|PHP 5"
+    {
+    }
+    "Remote|PHP 4"
+    {
+    }
+}
+"Files"
+{
+    "RouteMatch.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "controller.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "IRoutingEngine.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "ComponentDefinition.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "IViewEngineManager.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "ViewResult.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "configuration.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "IActionDispatcher.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "engine.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "IViewEngine.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "Template.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "Exception.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "IContextFactory.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "IDataBinder.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "controlleractionfilter.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "IViewLoader.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "TemplateViewExtension.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "Configuration\\components.yml"
+    {
+    "ProjRelPath" = "T"
+    }
+    "IContainer.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "viewenginemanager.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "IRouteMatch.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "RouteExpressionPathSegment.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "TemplateViewEngine.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "actiondispatcher.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "Luna.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "IActionResult.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "routingengine.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "urlinfo.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "Configuration"
+    {
+    "ProjRelPath" = "T"
+    }
+    "RouteExpression.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "IInitializable.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "viewengine.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "ViewContext.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "FileViewLoader.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "IConfiguration.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "TypeUtility.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "context.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "PathUtility.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "DataBinder.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "route.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "FlashArrayObject.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "IRoute.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "ChainedViewLoader.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "contextfactory.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "ActionResult.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "JsonResult.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "ResponseContext.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "container.php"
+    {
+    "ProjRelPath" = "T"
+    }
+    "IContainerAware.php"
+    {
+    "ProjRelPath" = "T"
+    }
+}
+"ProjStartupServices"
+{
+}
+"Globals"
+{
+}
+"References"
+{
+"PhpReference" = "pcre"
+"UserReference" = "Utility.php"
+}

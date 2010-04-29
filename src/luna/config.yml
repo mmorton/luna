@@ -1,0 +1,44 @@
+settings:  
+  controller_root: '/controllers'
+  layout_root: '/layouts'
+  view_root: '/views'
+  app_uri_root: '/luna/index.php'  
+  test-test: test
+services:
+  context_factory: 
+    service_type: [ILunaContextFactory, luna/luna_context.php] 
+    class_type: [LunaContextFactory, luna/luna_context.php]  
+  routing_engine: 
+    service_type: [ILunaRoutingEngine, luna/routing_engine.php]
+    class_type: [LunaRoutingEngine, luna/routing_engine.php] 
+    parameters:
+      route_types:
+        default: [LunaRoute, luna/route.php]  
+  provider_factory:
+    service_type: [ILunaActionDispatcher, luna/action_provider.php]
+    class_type: [LunaActionDispatcherProviderFactory, luna/action_provider.php]      
+    parameters:
+      providers:
+        default: [LunaActionDispatcherProvider, luna/action_provider.php]     
+  view_engine_manager:
+    service_type: [ILunaViewEngineManager, luna/view_engine.php]
+    class_type: [LunaViewEngineManager, luna/view_engine.php]
+    parameters:	
+      engines:
+        liquid: [LunaLiquidViewEngine, luna/view_engine.php]        
+  view_loader:
+    service_type: [ILunaViewLoader, luna/view_loader.php] 
+    class_type: [LunaChainedViewLoader, luna/view_loader.php]
+    parameters:
+      loaders: 
+        file: [LunaFileViewLoader, luna/view_loader.php]	  
+routes:
+  - 
+    match: ['{area}/{controller}/{action}/{?id}', '{controller}/{action}/{?id}']
+    require:
+      controller: (admin|test)
+    properties:
+      controller: set actual controller
+  - 
+    match: 'data/views/{section}/{view}'
+    provider: indb

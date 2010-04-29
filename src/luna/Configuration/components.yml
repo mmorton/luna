@@ -1,0 +1,28 @@
+contextFactory: 
+  serviceType: [ILunaContextFactory, luna/Context.php] 
+  classType: [LunaContextFactory, luna/Context.php]  
+standardDispatcher:
+  classType: [LunaActionDispatcher, luna/ActionDispatcher.php] 
+  singleton: false    
+standardRoute:
+  classType: [LunaRoute, luna/Route.php] 
+  singleton: false 
+  parameters:
+    dispatcher: standardDispatcher
+routingEngine: 
+  serviceType: [ILunaRoutingEngine, luna/RoutingEngine.php]
+  classType: [LunaRoutingEngine, luna/RoutingEngine.php] 
+  parameters:
+    defaultRouteType: standardRoute   
+phtmlViewEngine: [LunaTemplateViewEngine, luna-template/LunaTemplateViewEngine.php] 
+viewEngineManager:
+  serviceType: [ILunaViewEngineManager, luna/ViewEngineManager.php]
+  classType: [LunaViewEngineManager, luna/ViewEngineManager.php]
+  parameters:	
+    engines: [phtmlViewEngine]              
+viewLoader:
+  serviceType: [ILunaViewLoader, luna/ViewLoader.php] 
+  classType: [LunaChainedViewLoader, luna/ViewLoader.php]
+  parameters:
+    loaders: [fileViewLoader] 
+fileViewLoader: [LunaFileViewLoader, luna/ViewLoader.php]

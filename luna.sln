@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{1863889A-00DF-4350-BA39-669CA949CB81}") = "luna", "src\luna\luna.phpproj", "{78017666-E439-4488-B80A-CD8A4FBB16A6}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Local|PHP 4 = Local|PHP 4
+		Local|PHP 5.3 = Local|PHP 5.3
+		Remote|PHP 4 = Remote|PHP 4
+		Remote|PHP 5.3 = Remote|PHP 5.3
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{78017666-E439-4488-B80A-CD8A4FBB16A6}.Local|PHP 4.ActiveCfg = Local|PHP 4
+		{78017666-E439-4488-B80A-CD8A4FBB16A6}.Local|PHP 4.Deploy.0 = Local|PHP 4
+		{78017666-E439-4488-B80A-CD8A4FBB16A6}.Local|PHP 5.3.ActiveCfg = Local|PHP 5.3
+		{78017666-E439-4488-B80A-CD8A4FBB16A6}.Local|PHP 5.3.Deploy.0 = Local|PHP 5.3
+		{78017666-E439-4488-B80A-CD8A4FBB16A6}.Remote|PHP 4.ActiveCfg = Remote|PHP 4
+		{78017666-E439-4488-B80A-CD8A4FBB16A6}.Remote|PHP 4.Deploy.0 = Remote|PHP 4
+		{78017666-E439-4488-B80A-CD8A4FBB16A6}.Remote|PHP 5.3.ActiveCfg = Remote|PHP 5.3
+		{78017666-E439-4488-B80A-CD8A4FBB16A6}.Remote|PHP 5.3.Deploy.0 = Remote|PHP 5.3
+		{7137CA82-5575-4736-AD10-756E6414460C}.Local|PHP 4.ActiveCfg = Local|PHP 4
+		{7137CA82-5575-4736-AD10-756E6414460C}.Local|PHP 4.Deploy.0 = Local|PHP 4
+		{7137CA82-5575-4736-AD10-756E6414460C}.Local|PHP 5.3.ActiveCfg = Local|PHP 5.3
+		{7137CA82-5575-4736-AD10-756E6414460C}.Local|PHP 5.3.Deploy.0 = Local|PHP 5.3
+		{7137CA82-5575-4736-AD10-756E6414460C}.Remote|PHP 4.ActiveCfg = Remote|PHP 4
+		{7137CA82-5575-4736-AD10-756E6414460C}.Remote|PHP 4.Deploy.0 = Remote|PHP 4
+		{7137CA82-5575-4736-AD10-756E6414460C}.Remote|PHP 5.3.ActiveCfg = Remote|PHP 5.3
+		{7137CA82-5575-4736-AD10-756E6414460C}.Remote|PHP 5.3.Deploy.0 = Remote|PHP 5.3
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
