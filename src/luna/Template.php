@@ -72,6 +72,8 @@ class LunaTemplate
 				case "=":
 					$fragments[$i] = "echo ".$fragments[$i].";";
 					break;
+                case ":":
+                    $fragments[$i] = "echo htmlspecialchars(".$fragments[$i].");";
 				default:								
 					/* no action */
 					break;
