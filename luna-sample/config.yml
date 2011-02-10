@@ -1,0 +1,11 @@
+settings:
+  # appUriRoot: '/luna' # only needed if using rewrite and a your app is not at the root path
+  controllerRoot: '/controllers'
+  layoutRoot: '/views/layout'
+  viewRoot: '/views'
+routes:
+  -
+    for: '{controller}/{action}/{id}'
+    defaults:
+      action: 'index'
+      id: ''    
