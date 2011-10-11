@@ -34,9 +34,9 @@ class LunaEngine
 				$this->container->addComponent($name, $value);					
 		
 		/* load core components */
-		if (file_exists(dirname(__FILE__)."/Configuration/components.yml"))
+		if (file_exists(dirname(__FILE__)."/configuration/components.yml"))
 		{
-			$components = Spyc::YAMLLoad(dirname(__FILE__)."/Configuration/components.yml");
+			$components = Spyc::YAMLLoad(dirname(__FILE__)."/configuration/components.yml");
 			foreach ($components as $name => $value)
 				if ($this->container->hasComponent($name) == false) /* ensure service was not added by configuration */
 					$this->container->addComponent($name, $value);	

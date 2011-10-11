@@ -29,5 +29,6 @@ obj/
 _ReSharper*/
 [Tt]est[Rr]esult*
 php.ini
+web.config
 .httpd.conf
 .idea/

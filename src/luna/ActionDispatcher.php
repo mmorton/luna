@@ -57,7 +57,7 @@ class LunaActionDispatcher implements ILunaActionDispatcher, ILunaInitializable,
 	
 	protected function isValidPathSegment($segment)
 	{
-		return (preg_match("/^[\w-]+$/", $segment) === 1);
+		return (preg_match("/^[\\w-]+$/", $segment) === 1);
 	}
 	
 	protected function applyParameters($value, &$parameters)
@@ -165,6 +165,10 @@ class LunaActionDispatcher implements ILunaActionDispatcher, ILunaInitializable,
 		if ($this->controllerReflect->implementsInterface("ILunaContainerAware"))
 			if (strcasecmp($context->urlInfo->action, "setContainer") === 0)			
 				return false;
+
+        if ($this->controllerReflect->implementsInterface("ILunaContextAware"))
+            if (strcasecmp($context->urlInfo->action, "setContext") === 0)
+				return false;
 				
 		if ($this->controllerReflect->implementsInterface("ILunaInitializable"))
 			if (strcasecmp($context->urlInfo->action, "initialize") === 0)
@@ -236,9 +240,12 @@ class LunaActionDispatcher implements ILunaActionDispatcher, ILunaInitializable,
 			$instance = $this->controllerReflect->newInstanceArgs($this->resolveParameters($ctor, $context));	
 		else
 			$instance = $this->controllerReflect->newInstance();
-		
-		if ($instance instanceof ILunaContainerAware)
+
+        if ($instance instanceof ILunaContainerAware)
 			$instance->setContainer($this->container);
+
+        if ($instance instanceof ILunaContextAware)
+            $instance->setContext($context);
 			
 		if ($instance instanceof ILunaInitializable)
 			$instance->initialize();
@@ -260,8 +267,8 @@ class LunaActionDispatcher implements ILunaActionDispatcher, ILunaInitializable,
 							
 		if ($this->hasPreAction)
 		{	
-			if ($controllerInstance->preAction($context, $action, $result) === false)			
-				return $result;					
+			if ($controllerInstance->preAction($context, $action, $result) === false)
+				return $result;
 		}
 			
 		$actionResult = $actionMethod->invokeArgs($controllerInstance, $this->resolveParameters($actionMethod, $context));

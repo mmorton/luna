@@ -1,6 +1,6 @@
 <?php
 
-class LunaController 
+class LunaController implements ILunaContextAware
 {
 	protected $beforeFilterList = array();
 	protected $afterFilterList = array();
@@ -9,12 +9,12 @@ class LunaController
 	protected $propertyBag;
 	protected $flash;
 	
-	public function __construct($context)
-	{	
-		$this->context = $context;
+	public function setContext($context)
+    {
+        $this->context = $context;
 		$this->propertyBag =& $this->context->propertyBag;
 		$this->flash =& $this->context->flash;
-	}
+    }
 	
 	protected function selectView($view)
 	{
