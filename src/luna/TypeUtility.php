@@ -23,7 +23,7 @@ class LunaTypeUtility
 		if (is_array($type))
 			$parts =& $type;
 		else
-			$parts = explode(",", $type);		
+			$parts = explode(",", $type);
 		
 		if (count($parts) <= 0)
 			if ($throw)

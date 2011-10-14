@@ -2,8 +2,26 @@
 
 class LunaEngine
 {
-	public $container;
+    /**
+     * @var $configuration ILunaConfiguration
+     */
 	public $configuration;
+    /**
+     * @var $container ILunaContainer
+     */
+	public $container;
+    /**
+     * @var $contextFactory ILunaContextFactory
+     */
+    public $contextFactory;
+    /**
+     * @var $routingEngine ILunaRoutingEngine
+     */
+    public $routingEngine;
+    /**
+     * @var $viewEngineManager ILunaViewEngineManager
+     */
+    public $viewEngineManager;
 	
 	public function __construct(ILunaConfiguration $configuration)
 	{
@@ -13,6 +31,11 @@ class LunaEngine
 	public function initialize() 
 	{				
 		$this->createContainer();
+
+        $this->contextFactory = $this->container->getComponentFor("ILunaContextFactory");
+        $this->routingEngine = $this->container->getComponentFor("ILunaRoutingEngine");
+        $this->viewEngineManager = $this->container->getComponentFor("ILunaViewEngineManager");
+
 		$this->createRoutes();		
 	}
 	
@@ -29,14 +52,14 @@ class LunaEngine
 			$this->configuration);
 		
 		/* load configured components */	
-		if (($components = $this->container->configuration->getSection("components")) !== false)		
+		if (($components = $this->configuration->getSection("components")) !== false)
 			foreach ($components as $name => $value)
 				$this->container->addComponent($name, $value);					
 		
 		/* load core components */
-		if (file_exists(dirname(__FILE__)."/configuration/components.yml"))
+		if (file_exists(dirname(__FILE__)."/configuration/components.json"))
 		{
-			$components = Spyc::YAMLLoad(dirname(__FILE__)."/configuration/components.yml");
+			$components = json_decode(file_get_contents(dirname(__FILE__)."/configuration/components.json"), true);
 			foreach ($components as $name => $value)
 				if ($this->container->hasComponent($name) == false) /* ensure service was not added by configuration */
 					$this->container->addComponent($name, $value);	
@@ -45,31 +68,34 @@ class LunaEngine
 	
 	protected function createRoutes()
 	{
-		$this->container->routingEngine->load($this->container->configuration->getSection("routes"));
+		$this->routingEngine->load($this->configuration->getSection("routes"));
 	}
 	
 	protected function createContext() 
 	{
-		return $this->container->contextFactory->create($this);
+		return $this->contextFactory->create($this);
 	}
 	
 	protected function releaseContext($context)
 	{
-		$this->container->contextFactory->release($context);
+		$this->contextFactory->release($context);
 	}
 	
 	protected function processContext($context)
 	{							
-		$context->route = $this->container->routingEngine->find($context->urlInfo->path);		
+		$context->route = $this->routingEngine->find($context->request);
 		if ($context->route === false)
 			return $this->raiseSystemError($context, 404, "No route.");
 		
 		foreach ($context->route->getParameters() as $name => $value)
-			$context->urlInfo->__set($name, $value);					
+			$context->request->__set($name, $value);
 		
 		try
-		{	
-			$actionDispatcher = $this->container->getComponent($context->route->getDispatcher(), false, array("context" => $context));						
+		{
+            /**
+             * @var $actionDispatcher ILunaActionDispatcher
+             */
+			$actionDispatcher = $this->container->getComponentFor($context->route->getDispatcherType(), false, array("context" => $context));
 			
 			if ($actionDispatcher->canDispatch($context) === false)		
 				return $this->raiseSystemError($context, 404, "Can't dispatch.");																
@@ -99,7 +125,7 @@ class LunaEngine
 				return $this->sendResponse($context);
 			}															
 			
-			$context->response->content[] = $this->container->viewEngineManager->renderTemplate(
+			$context->response->content[] = $this->viewEngineManager->renderTemplate(
 				$context,
 				$context->view->selectedView,
 				$context->view->selectedLayout

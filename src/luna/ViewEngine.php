@@ -34,7 +34,7 @@ abstract class LunaViewEngine implements ILunaViewEngine
 		if (isset($this->resolveCache[$name]))
 			return $this->resolveCache[$name];
 		
-		$parameters = array_merge($context->urlInfo->getCustomProperties(), array('view' => $name));
+		$parameters = array_merge($context->request->getCustomProperties(), array('view' => $name));
 		
 		foreach ($this->viewPaths as $viewPath)
 		{

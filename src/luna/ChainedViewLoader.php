@@ -2,13 +2,16 @@
 
 class LunaChainedViewLoader implements ILunaViewLoader, ILunaContainerAware, ILunaInitializable
 {
+    /**
+     * @var $container ILunaContainer
+     */
 	private $container;
-	private $loaders;
+	private $viewLoaderTypes;
 	private $loaderChain = array();
 	
-	public function __construct($loaders)
+	public function __construct($viewLoaderTypes)
 	{
-		$this->loaders = $loaders;
+		$this->viewLoaderTypes = $viewLoaderTypes;
 	}
 	
 	public function setContainer($container)
@@ -18,12 +21,15 @@ class LunaChainedViewLoader implements ILunaViewLoader, ILunaContainerAware, ILu
 		
 	public function initialize()
 	{		
-		foreach ($this->loaders as $name)
-			$this->loaderChain[] = $this->container->getComponent($name);		
+		foreach ($this->viewLoaderTypes as $viewLoaderType)
+			$this->loaderChain[] = $this->container->getComponentFor($viewLoaderType);
 	}	
 		
 	public function hasTemplate($name)
 	{
+        /**
+         * @var $loader ILunaViewLoader
+         */
 		foreach ($this->loaderChain as $loader)
 			if ($loader->hasTemplate($name))
 				return true;
@@ -32,6 +38,9 @@ class LunaChainedViewLoader implements ILunaViewLoader, ILunaContainerAware, ILu
 	
 	public function getTemplate($name)
 	{
+        /**
+         * @var $loader ILunaViewLoader
+         */ 
 		foreach ($this->loaderChain as $loader)
 			if ($loader->hasTemplate($name))
 				return $loader->getTemplate($name);

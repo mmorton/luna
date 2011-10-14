@@ -3,18 +3,21 @@
 class LunaViewEngineManager implements ILunaViewEngineManager, ILunaInitializable, ILunaContainerAware
 {
 	private $chain = array();
-	private $engines;	
+	private $viewEngineTypes;
+    /**
+     * @var $container ILunaContainer
+     */
 	private $container;
 	
-	public function __construct($engines) 
+	public function __construct($viewEngineTypes)
 	{			
-		$this->engines = $engines;		
+		$this->viewEngineTypes = $viewEngineTypes;
 	}
 	
 	function initialize()
 	{								
-		foreach ($this->engines as $engine)
-			$this->registerViewEngine($this->container->getComponent($engine));				
+		foreach ($this->viewEngineTypes as $viewEngineType)
+			$this->registerViewEngine($this->container->getComponentFor($viewEngineType));
 	}
 	
 	function setContainer($container)
@@ -32,6 +35,9 @@ class LunaViewEngineManager implements ILunaViewEngineManager, ILunaInitializabl
 	{	
 		foreach ($this->chain as $viewEngine)
 		{
+            /**
+             * @var $viewEngine ILunaViewEngine
+             */
 			if ($viewEngine->hasTemplate($context, $templateName))
 				return $viewEngine->renderTemplate($context, $templateName, $layoutName);
 		}

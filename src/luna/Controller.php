@@ -96,8 +96,8 @@ class LunaController implements ILunaContextAware
 		}	
 		if (is_array($values)) 
 		{
-			$basePath = $this->context->urlInfo->basePath;
-			$values = array_merge($this->context->urlInfo->getCustomProperties(), $values);	
+			$basePath = $this->context->request->basePath;
+			$values = array_merge($this->context->request->getCustomProperties(), $values);
 			$this->context->response->redirect = $basePath.$this->context->container->routingEngine->reverse($values);
 		}
 		else

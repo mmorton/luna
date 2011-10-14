@@ -3,43 +3,46 @@
 class LunaRoute implements ILunaRoute, ILunaContainerAware
 {
 	private static $preMatchRequire = array("host" => true, "port" => true, "method" => true);
-	private static $pathSeparator = "/";
 	
-	protected $config;	
+	protected $definition;
 	protected $for = array();	
 	protected $defaults = array();
 	protected $parameters = array();
 	protected $requires = array();
-	protected $dispatcher;
+	protected $dispatcherType;
+
+    /**
+     * @var $container ILunaContainer
+     */
 	protected $container;
 	
-	public function __construct($dispatcher, $definition)
+	public function __construct($defaultDispatcherType, $definition)
 	{
-		$this->dispatcher = $dispatcher;
-		$this->config = $definition;
+		$this->dispatcherType = $defaultDispatcherType;
+		$this->definition = $definition;
 		
-		if (isset($this->config["for"]))
+		if (isset($this->definition["for"]))
 		{			
-			if (is_array($this->config["for"]))
+			if (is_array($this->definition["for"]))
 			{
-				foreach ($this->config["for"] as $expression)
+				foreach ($this->definition["for"] as $expression)
 					$this->for[] = LunaRouteExpression::parse($expression);
 			}
 			else				
-				$this->for[] = LunaRouteExpression::parse($this->config["for"]);			
+				$this->for[] = LunaRouteExpression::parse($this->definition["for"]);
 		}				
 		
-		if (isset($this->config["requires"]))
-			$this->requires = $this->config["requires"];
+		if (isset($this->definition["requires"]))
+			$this->requires = $this->definition["requires"];
 			
-		if (isset($this->config["defaults"]))
-			$this->defaults = $this->config["defaults"];
+		if (isset($this->definition["defaults"]))
+			$this->defaults = $this->definition["defaults"];
 			
-		if (isset($this->config["dispatcher"]))
-			$this->dispatcher = $this->config["dispatcher"];	
+		if (isset($this->definition["dispatcherType"]))
+			$this->dispatcherType = $this->definition["dispatcherType"];
 			
-		if (isset($this->config["parameters"]))
-			$this->parameters = $this->config["parameters"];						
+		if (isset($this->definition["parameters"]))
+			$this->parameters = $this->definition["parameters"];
 	}
 	
 	public function setContainer($container)
@@ -47,19 +50,22 @@ class LunaRoute implements ILunaRoute, ILunaContainerAware
 		$this->container = $container;
 	}
 	
-	public function match($path)
+	public function match($request)
 	{
 		/* early out for require statements that do not rely on expression */
 		foreach (array_keys(self::$preMatchRequire) as $key)
 		{
 			if (isset($this->requires[$key]))
-				if (preg_match($this->requires[$key], $urlInfo->$key) !== 1)
+				if (preg_match($this->requires[$key], $request->$key) !== 1)
 					return false;
 		}		
 				
 		foreach ($this->for as $for)
-		{	
-			$parameters = $for->match($path, $this->defaults);
+		{
+            /**
+             * @var $for LunaRouteExpression
+             */
+			$parameters = $for->match($request->path, $this->defaults);
 			
 			if ($parameters === false)
 				continue;
@@ -83,7 +89,7 @@ class LunaRoute implements ILunaRoute, ILunaContainerAware
 			if ($requirementsPassed === false)
 				continue;
 				
-			return new LunaRouteMatch($this, $this->dispatcher, array_merge($parameters, $this->parameters));							
+			return new LunaRouteMatch($this, $this->dispatcherType, array_merge($parameters, $this->parameters));
 		}
 		
 		return false;

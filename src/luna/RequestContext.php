@@ -3,7 +3,7 @@
  * @package Luna
  */
 
-class LunaUrlInfo
+class LunaRequestContext
 {
 	public $rootPath;
 	public $basePath;

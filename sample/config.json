@@ -1,0 +1,14 @@
+{
+    "settings": {
+        "controllerRoot": "/controllers",
+        "layoutRoot": "/views/layout",
+        "viewRoot": "/views"
+    },
+    "routes": [{
+        "for": "{controller}/{action}/{id}",
+        "defaults": {
+            "action": "index",
+            "id": ""
+        }
+    }]
+}

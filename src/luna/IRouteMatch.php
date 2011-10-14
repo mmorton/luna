@@ -3,7 +3,7 @@
 interface ILunaRouteMatch
 {
 	function getRoute();
-	function getDispatcher();
+	function getDispatcherType();
 	function getParameters();
 }
 

@@ -22,7 +22,7 @@ class LunaConfiguration implements ILunaConfiguration, ILunaInitializable
 	public function initialize()
 	{
 		if (is_string($this->config))
-			$this->config = Spyc::YAMLLoad($this->config);
+			$this->config = json_decode(file_get_contents($this->config), true);
 			
 		if (isset($this->config[$this->environment]))
 			$this->active =& $this->config[$this->environment];

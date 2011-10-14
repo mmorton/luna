@@ -37,7 +37,4 @@ class Luna
 	}
 }
 
-if (file_exists(dirname(__FILE__)."/../spyc"))
-	include_once dirname(__FILE__)."/../spyc/spyc.php5";	
-
 ?>

@@ -18,8 +18,8 @@ class LunaActionDispatcher implements ILunaActionDispatcher, ILunaInitializable,
 	public function __construct($context, $controllerRoot = false, $controllerPaths = false, $controllerNames = false, ILunaConfiguration $configuration = null)
 	{	
 		$this->appRoot = $context->appRoot;
-		$this->controller = $context->urlInfo->controller;
-		$this->parameters =& $context->urlInfo->getCustomProperties();
+		$this->controller = $context->request->controller;
+		$this->parameters =& $context->request->getCustomProperties();
 		
 		if ($controllerRoot === false && is_null($configuration) === false)
 		{
@@ -37,17 +37,17 @@ class LunaActionDispatcher implements ILunaActionDispatcher, ILunaInitializable,
 		if ($controllerNames !== false)
 			$this->controllerNames = $controllerNames;
 		
-		if (isset($context->urlInfo->controllerPaths))
+		if (isset($context->request->controllerPaths))
 			$this->controllerPaths = array_merge($this->controllerPaths, 
-				is_array($context->urlInfo->controllerPaths) 
-					? $context->urlInfo->controllerPaths 
-					: array($context->urlInfo->controllerPaths));
+				is_array($context->request->controllerPaths)
+					? $context->request->controllerPaths
+					: array($context->request->controllerPaths));
 		
-		if (isset($context->urlInfo->controllerNames))
+		if (isset($context->request->controllerNames))
 			$this->controllerNames = array_merge($this->controllerNames, 
-				is_array($context->urlInfo->controllerNames)
-					? $context->urlInfo->controllerNames
-					: array($context->urlInfo->controllerNames));
+				is_array($context->request->controllerNames)
+					? $context->request->controllerNames
+					: array($context->request->controllerNames));
 	}
 	
 	public function setContainer($container)
@@ -158,23 +158,23 @@ class LunaActionDispatcher implements ILunaActionDispatcher, ILunaInitializable,
 	
 	public function canDispatch($context)
 	{
-		if (strcasecmp($context->urlInfo->action, "preAction") === 0 ||
-			strcasecmp($context->urlInfo->action, "postAction") === 0)
+		if (strcasecmp($context->request->action, "preAction") === 0 ||
+			strcasecmp($context->request->action, "postAction") === 0)
 			return false;
 			
 		if ($this->controllerReflect->implementsInterface("ILunaContainerAware"))
-			if (strcasecmp($context->urlInfo->action, "setContainer") === 0)			
+			if (strcasecmp($context->request->action, "setContainer") === 0)
 				return false;
 
         if ($this->controllerReflect->implementsInterface("ILunaContextAware"))
-            if (strcasecmp($context->urlInfo->action, "setContext") === 0)
+            if (strcasecmp($context->request->action, "setContext") === 0)
 				return false;
 				
 		if ($this->controllerReflect->implementsInterface("ILunaInitializable"))
-			if (strcasecmp($context->urlInfo->action, "initialize") === 0)
+			if (strcasecmp($context->request->action, "initialize") === 0)
 				return false;
 		
-		$methodName = $this->actionToMethodName($context->urlInfo->action);
+		$methodName = $this->actionToMethodName($context->request->action);
 		
 		if (isset($methodName) && strlen($methodName) > 0)
 		{	
@@ -201,32 +201,22 @@ class LunaActionDispatcher implements ILunaActionDispatcher, ILunaInitializable,
 		{
 			$paramName = $param->getName();
 			$paramClass = is_null($param->getClass()) == false ? $param->getClass()->getName() : false;	
-			
-			switch ($paramName)
-			{
-				/* system variables */
-				case "context":
-					$parameters[$i] = $context;
-					break;
-				/* url properties */
-				default:
-					$customProperties =& $context->urlInfo->getCustomProperties();					
-					if (isset($customProperties[$paramName]))
-						$parameters[$i] = $customProperties[$paramName];
-					elseif (isset($context->urlInfo->query[$paramName]))
-						$parameters[$i] = $context->urlInfo->query[$paramName];
-					elseif ($paramName == "context" || $paramClass == "LunaContext")	
-						$parameters[$i] = $context;
-					elseif (is_string($paramClass) && $this->container->hasComponentFor($paramClass))							
-						$parameters[$i] = $this->container->getComponentFor($paramClass);				
-					elseif ($this->container->hasComponent($paramName))
-						$parameters[$i] = $this->container->getComponent($paramName);					
-					elseif ($paramName == "componentContainer" || $paramClass == "ILunaContainer") 					
-						$parameters[$i] = $this->container; 		
-					elseif ($param->isDefaultValueAvailable())					
-						$parameters[$i] = $param->getDefaultValue(); 									
-					break;
-			}
+						
+            $customProperties =& $context->request->getCustomProperties();
+            if (isset($customProperties[$paramName]))
+                $parameters[$i] = $customProperties[$paramName];
+            elseif (isset($context->request->query[$paramName]))
+                $parameters[$i] = $context->request->query[$paramName];
+            elseif ($paramName == "context" || $paramClass == "LunaContext")
+                $parameters[$i] = $context;
+            elseif (is_string($paramClass) && $this->container->hasComponentFor($paramClass))
+                $parameters[$i] = $this->container->getComponentFor($paramClass);
+            elseif ($this->container->hasComponent($paramName))
+                $parameters[$i] = $this->container->getComponent($paramName);
+            elseif ($paramName == "componentContainer" || $paramClass == "ILunaContainer")
+                $parameters[$i] = $this->container;
+            elseif ($param->isDefaultValueAvailable())
+                $parameters[$i] = $param->getDefaultValue();
 		}
 		
 		return $parameters;
@@ -255,7 +245,7 @@ class LunaActionDispatcher implements ILunaActionDispatcher, ILunaInitializable,
 	
 	public function dispatch($context)
 	{			
-		$action = $context->urlInfo->action;		
+		$action = $context->request->action;
 		
 		$context->view->selectedLayout = "default"; /* can be overridden in controller constructor */
 		$context->view->selectedView = $action;			

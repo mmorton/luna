@@ -5,7 +5,7 @@ include_once "../src/luna/Luna.php";
 
 Luna::initialize();
 
-$engine = new LunaEngine(new LunaConfiguration("config.yml", "production"));
+$engine = new LunaEngine(new LunaConfiguration("config.json", "production"));
 $engine->initialize();
 $engine->processRequest();
 $end = microtime(true);

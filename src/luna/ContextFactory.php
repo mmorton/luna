@@ -29,7 +29,7 @@ class LunaContextFactory implements ILunaContextFactory
 		$context->appRoot = dirname($_SERVER["SCRIPT_FILENAME"]);	
 		$context->engine = $engine;
 		$context->container = new LunaContainer($engine->container); /* create a context only child container */
-		$context->urlInfo = $this->createUrlInfo();		
+		$context->request = $this->createRequestContext();
 		
 		$context->propertyBag = array();		
 		$context->flash = new LunaFlashArrayObject();
@@ -44,16 +44,16 @@ class LunaContextFactory implements ILunaContextFactory
 			$context->flash->write();
 	}
 	
-	function createUrlInfo()
+	function createRequestContext()
 	{
-		$urlInfo = new LunaUrlInfo();
-		$urlInfo->raw = $_SERVER["REQUEST_URI"];
-		$urlInfo->host = $_SERVER["HTTP_HOST"];
-		$urlInfo->port = $_SERVER["SERVER_PORT"];	
-		$urlInfo->method = $_SERVER["REQUEST_METHOD"];
-		$urlInfo->rewrite = (stripos($_SERVER["REQUEST_URI"], $_SERVER["SCRIPT_NAME"]) === false);
-		$urlInfo->rootPath = dirname($_SERVER["SCRIPT_NAME"]); 
-		$urlInfo->basePath = $urlInfo->rewrite ? $urlInfo->rootPath : $_SERVER["SCRIPT_NAME"];
+		$request = new LunaRequestContext();
+		$request->raw = $_SERVER["REQUEST_URI"];
+		$request->host = $_SERVER["HTTP_HOST"];
+		$request->port = $_SERVER["SERVER_PORT"];
+		$request->method = $_SERVER["REQUEST_METHOD"];
+		$request->rewrite = (stripos($_SERVER["REQUEST_URI"], $_SERVER["SCRIPT_NAME"]) === false);
+		$request->rootPath = dirname($_SERVER["SCRIPT_NAME"]);
+		$request->basePath = $request->rewrite ? $request->rootPath : $_SERVER["SCRIPT_NAME"];
 		
 		/* determine path */
 		$segments = explode("?", $_SERVER["REQUEST_URI"]); 
@@ -62,17 +62,17 @@ class LunaContextFactory implements ILunaContextFactory
 		if ($this->appUriRoot !== false)
 		{
 			if (stripos($path, $this->appUriRoot) === 0)		
-				$urlInfo->path = substr($path, strlen($this->appUriRoot));		
+				$request->path = substr($path, strlen($this->appUriRoot));
 			else		
-				$urlInfo->path = $path;
+				$request->path = $path;
 		}
 		else
 		{
 			/* we can only determine the true path if rewrite is false, otherwise we assume it's the full request path */
-			if ($urlInfo->rewrite === false)
-				$urlInfo->path = substr($path, strlen($_SERVER["SCRIPT_NAME"]));
+			if ($request->rewrite === false)
+				$request->path = substr($path, strlen($_SERVER["SCRIPT_NAME"]));
 			else
-				$urlInfo->path = $path;
+				$request->path = $path;
 		}
 			
 		/* just want query string parameters */
@@ -82,13 +82,13 @@ class LunaContextFactory implements ILunaContextFactory
 			$parts = explode("=", $parameter);
 			if (count($parts) == 0)
 				continue;
-			$urlInfo->query[urldecode($parts[0])] = (count($parts) > 1) ? urldecode($parts[1]) : "";			
+			$request->query[urldecode($parts[0])] = (count($parts) > 1) ? urldecode($parts[1]) : "";
 		}
 		
 		if (isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] !== "off")
-			$urlInfo->secure = true;
+			$request->secure = true;
 			
-		return $urlInfo;
+		return $request;
 	}
 }
 
