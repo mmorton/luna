@@ -50,20 +50,19 @@ class LunaEngine
 				"singleton" => true
 			), 
 			$this->configuration);
-		
-		/* load configured components */	
-		if (($components = $this->configuration->getSection("components")) !== false)
-			foreach ($components as $name => $value)
-				$this->container->addComponent($name, $value);					
-		
-		/* load core components */
+
+        /* load core components */
 		if (file_exists(dirname(__FILE__)."/configuration/components.json"))
 		{
 			$components = json_decode(file_get_contents(dirname(__FILE__)."/configuration/components.json"), true);
 			foreach ($components as $name => $value)
-				if ($this->container->hasComponent($name) == false) /* ensure service was not added by configuration */
-					$this->container->addComponent($name, $value);	
+                $this->container->addComponent($name, $value);
 		}
+
+		/* load configured components */	
+		if (($components = $this->configuration->getSection("components")) !== false)
+			foreach ($components as $name => $value)
+				$this->container->addComponent($name, $value);
 	}
 	
 	protected function createRoutes()
