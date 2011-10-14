@@ -1,7 +1,7 @@
 <?php
 
 $start = microtime(true);
-include_once "../src/luna/Luna.php";
+include_once "../src/Luna.php";
 
 Luna::initialize();
 
