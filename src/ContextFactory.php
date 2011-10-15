@@ -25,11 +25,15 @@ class LunaContextFactory implements ILunaContextFactory
 		$context = new LunaContext();
 		$context->items = array();
 		$context->view = new LunaViewContext();
-		$context->response = new LunaResponseContext();		
 		$context->appRoot = dirname($_SERVER["SCRIPT_FILENAME"]);	
 		$context->engine = $engine;
-		$context->container = new LunaContainer($engine->container); /* create a context only child container */
-		$context->request = $this->createRequestContext();
+        $context->request = $this->createRequestContext();
+        $context->response = new LunaResponseContext();
+        $context->container = new LunaContainer($engine->container); /* create a context only child container */
+
+        $context->container->addComponent("context", $context);
+        $context->container->addComponent("request", $context->request);
+        $context->container->addComponent("response", $context->response);
 		
 		$context->propertyBag = array();		
 		$context->flash = new LunaFlashArrayObject();

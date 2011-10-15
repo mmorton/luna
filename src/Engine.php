@@ -94,7 +94,7 @@ class LunaEngine
             /**
              * @var $actionDispatcher ILunaActionDispatcher
              */
-			$actionDispatcher = $this->container->getComponentFor($context->route->getDispatcherType(), false, array("context" => $context));
+			$actionDispatcher = $context->container->getComponentFor($context->route->getDispatcherType(), false, array("context" => $context));
 			
 			if ($actionDispatcher->canDispatch($context) === false)		
 				return $this->raiseSystemError($context, 404, "Can't dispatch.");																

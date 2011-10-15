@@ -17,6 +17,9 @@
 
 class LunaContainer implements ILunaContainer
 {
+    /**
+     * @var $parent LunaContainer
+     */
 	private $parent = null;
 	private $componentDefinitions = array();
 	private $componentInstances = array();
@@ -70,7 +73,7 @@ class LunaContainer implements ILunaContainer
 		{						
 			if (isset($definition->class) == false)
 				$definition->class = LunaTypeUtility::loadType($definition->classType);
-			if (isset($definition->typeReflect) == false)
+			if (isset($definition->classReflect) == false)
 				$definition->classReflect = new ReflectionClass($definition->class);
 			if (isset($definition->service) == false)
 				$definition->service = LunaTypeUtility::loadType($definition->serviceType);
@@ -140,65 +143,102 @@ class LunaContainer implements ILunaContainer
 		}
 		
 		if ($definition->isSingleton && $definition->create && is_null($instance))
-			$instance = $this->createInstance($definition);
+			$instance = $this->createComponentInstance($definition);
 		
 		if (is_null($instance) == false)
 			$this->componentInstances[$name] = $instance;
 	}
-	
-	protected function resolveParameters($reflectMethod, $componentDefinition, &$optionalParameters = null)
-	{
-		$resolvedParameters = array();		
-				
-		foreach ($reflectMethod->getParameters() as $i => $param)
-		{
-			$paramName = $param->getName();	
-			$paramClass = is_null($param->getClass()) == false ? $param->getClass()->getName() : false;		
 
-			if (is_array($componentDefinition->parameters) && isset($componentDefinition->parameters[$paramName]))
+    /**
+     * @param $function ReflectionFunction
+     * @param null $componentParameters
+     * @param null $optionalParameters
+     * @param $root LunaContainer
+     * @return array
+     */
+    protected function resolveParametersForFunction($function, &$componentParameters, &$optionalParameters, LunaContainer $root = null)
+    {
+        $resolvedParameters = array();
+
+		foreach ($function->getParameters() as $i => $parameter)
+		{
+            /** @var $parameter ReflectionParameter */
+			$parameterName = $parameter->getName();
+			$parameterClass = is_null($parameter->getClass()) == false ? $parameter->getClass()->getName() : false;
+
+            if (is_string($parameterClass) && $this->hasComponentFor($parameterClass))
+			{
+				$resolvedParameters[$i] = $this->getComponentFor($parameterClass);
+			}
+            elseif ($parameterClass == "ILunaContainer")
+			{
+				$resolvedParameters[$i] = isset($root) ? $root : $this; /* new LunaContainer($this); */ /* set a new scoped container? */
+			}
+            elseif (is_array($optionalParameters) && isset($optionalParameters[$parameterName]))
+			{
+				$resolvedParameters[$i] = $optionalParameters[$parameterName];
+			}
+			elseif (is_array($componentParameters) && isset($componentParameters[$parameterName]))
 			{
 				/* resolve service reference */
-				if (is_string($componentDefinition->parameters[$paramName]) && preg_match('/\$\{(\w+)\}/', $componentDefinition->parameters[$paramName], $match))
+				if (is_string($componentParameters[$parameterName]) && preg_match('/\$\{(\w+)\}/', $componentParameters[$parameterName], $match))
 					$resolvedParameters[$i] = $this->getComponent($match[1]);
 				else
-					$resolvedParameters[$i] = $componentDefinition->parameters[$paramName];
+					$resolvedParameters[$i] = $componentParameters[$parameterName];
 			}
-			elseif (is_array($optionalParameters) && isset($optionalParameters[$paramName]))
+			elseif ($this->hasComponent($parameterName))
 			{
-				$resolvedParameters[$i] = $optionalParameters[$paramName];
+				$resolvedParameters[$i] = $this->getComponent($parameterName);
 			}
-			elseif (is_string($paramClass) && $this->hasComponentFor($paramClass))
-			{				
-				$resolvedParameters[$i] = $this->getComponentFor($paramClass);
-			}
-			elseif ($this->hasComponent($paramName)) 
+			elseif ($parameterName == "componentContainer")
 			{
-				$resolvedParameters[$i] = $this->getComponent($paramName);
+				$resolvedParameters[$i] = isset($root) ? $root : $this; /* new LunaContainer($this); */ /* set a new scoped container? */
 			}
-			elseif ($paramName == "componentContainer" || $paramClass == "ILunaContainer") 
+			elseif ($parameter->isDefaultValueAvailable())
 			{
-				$resolvedParameters[$i] = $this; /* new LunaContainer($this); */ /* set a new scoped container? */
+				$resolvedParameters[$i] = $parameter->getDefaultValue();
 			}
-			elseif ($param->isDefaultValueAvailable())
-			{
-				$resolvedParameters[$i] = $param->getDefaultValue(); 
-			}				
 		}
 
 		return $resolvedParameters;
-	}
+    }
 	
-	protected function createInstance($componentDefinition, &$optionalParameters = null)
+	public function getParametersFor($instance, $function, $optionalParameters = null)
+    {
+        $functionReflect = null;
+        $componentParameters = null;
+
+        if ($function instanceof ReflectionFunctionAbstract)
+        {
+            $functionReflect = $function;
+        }
+        elseif (is_string($function))
+        {
+            if (isset($instance))
+            {
+                $instanceReflect = new ReflectionClass($instance);
+                $functionReflect = $instanceReflect->getMethod($function);
+            }
+            else
+            {
+                $functionReflect = new ReflectionFunction($function);
+            }
+        }
+
+        return $this->resolveParametersForFunction($functionReflect, $componentParameters, $optionalParameters);
+    }
+	
+	protected function createComponentInstance($componentDefinition, &$optionalParameters = null, LunaContainer $root = null)
 	{					
 		$ctor = $componentDefinition->classReflect->getConstructor();
 
 		if (isset($ctor))
-			$instance = $componentDefinition->classReflect->newInstanceArgs($this->resolveParameters($ctor, $componentDefinition, $optionalParameters));
+			$instance = $componentDefinition->classReflect->newInstanceArgs($this->resolveParametersForFunction($ctor, $componentDefinition->parameters, $optionalParameters, $root));
 		else
 			$instance = $componentDefinition->classReflect->newInstance();
 			
 		if ($instance instanceof ILunaContainerAware)
-			$instance->setContainer($this); /* (new LunaContainer($this)); */ /* set a new scoped container? */
+			$instance->setContainer(isset($root) ? $root : $this); /* (new LunaContainer($this)); */ /* set a new scoped container? */
 			
 		if ($instance instanceof ILunaInitializable)
 			$instance->initialize();
@@ -206,11 +246,11 @@ class LunaContainer implements ILunaContainer
 		return $instance;						
 	}
 	
-	public function getComponent($name, $localOnly = false, $optionalParameters = null)
+	public function getComponent($name, $localOnly = false, $optionalParameters = null, LunaContainer $root = null)
 	{				
 		if (isset($this->componentDefinitions[$name]) == false)
 			if ($localOnly === false && isset($this->parent))
-				return $this->parent->getComponent($name, false, $optionalParameters);
+				return $this->parent->getComponent($name, false, $optionalParameters, isset($root) ? $root : $this);
 			else
 				return null;
 					
@@ -219,19 +259,19 @@ class LunaContainer implements ILunaContainer
 		if ($definition->isSingleton)
 		{
 			if (isset($this->componentInstances[$name]) == false)							
-				$this->componentInstances[$name] = $this->createInstance($definition); /* should singleton services allow optional parameters? */			
+				$this->componentInstances[$name] = $this->createComponentInstance($definition); /* should singleton services allow optional parameters? */
 				
 			return $this->componentInstances[$name];			
 		}					
 		
-		return $this->createInstance($definition, $optionalParameters);
+		return $this->createComponentInstance($definition, $optionalParameters, $root);
 	}
 	
-	public function getComponentFor($service, $localOnly = false, $optionalParameters = null)
+	public function getComponentFor($service, $localOnly = false, $optionalParameters = null, ILunaContainer $root = null)
 	{
 		if (isset($this->serviceToName[$service]) == false)
 			if ($localOnly === false && isset($this->parent))
-				return $this->parent->getComponentFor($service, false, $optionalParameters);
+				return $this->parent->getComponentFor($service, false, $optionalParameters, isset($root) ? $root : $this);
 			else
 				return null;						
 				
@@ -241,12 +281,12 @@ class LunaContainer implements ILunaContainer
 		if ($definition->isSingleton)
 		{
 			if (isset($this->componentInstances[$name]) == false)							
-				$this->componentInstances[$name] = $this->createInstance($definition); /* should singleton services allow optional parameters? */			
+				$this->componentInstances[$name] = $this->createComponentInstance($definition); /* should singleton services allow optional parameters? */
 				
 			return $this->componentInstances[$name];			
 		}					
 		
-		return $this->createInstance($definition, $optionalParameters);
+		return $this->createComponentInstance($definition, $optionalParameters, $root);
 	}
 	
 	public function hasComponent($name, $localOnly = false)

@@ -6,10 +6,17 @@ class HomeController extends LunaController
     {
     }
 
+    /* parameters mapped in from route/query */
     function hello($id, $name)
     {
         $this->propertyBag['id'] = $id;
         $this->propertyBag['name'] = $name;
+    }
+
+    /* parameter mapped in from container */
+    function sample(LunaRequestContext $requestContext)
+    {
+        echo $requestContext->path;
     }
 }
 

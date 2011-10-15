@@ -2,6 +2,9 @@
 
 class LunaActionDispatcher implements ILunaActionDispatcher, ILunaInitializable, ILunaContainerAware
 {
+    /**
+     * @var $container ILunaContainer
+     */
 	protected $container;
 	protected $appRoot;
 	protected $parameters = array();
@@ -195,31 +198,9 @@ class LunaActionDispatcher implements ILunaActionDispatcher, ILunaInitializable,
 	
 	protected function resolveParameters($reflectMethod, $context)
 	{
-		$parameters = array();		
-		
-		foreach ($reflectMethod->getParameters() as $i => $param)
-		{
-			$paramName = $param->getName();
-			$paramClass = is_null($param->getClass()) == false ? $param->getClass()->getName() : false;	
-						
-            $customProperties =& $context->request->getCustomProperties();
-            if (isset($customProperties[$paramName]))
-                $parameters[$i] = $customProperties[$paramName];
-            elseif (isset($context->request->query[$paramName]))
-                $parameters[$i] = $context->request->query[$paramName];
-            elseif ($paramName == "context" || $paramClass == "LunaContext")
-                $parameters[$i] = $context;
-            elseif (is_string($paramClass) && $this->container->hasComponentFor($paramClass))
-                $parameters[$i] = $this->container->getComponentFor($paramClass);
-            elseif ($this->container->hasComponent($paramName))
-                $parameters[$i] = $this->container->getComponent($paramName);
-            elseif ($paramName == "componentContainer" || $paramClass == "ILunaContainer")
-                $parameters[$i] = $this->container;
-            elseif ($param->isDefaultValueAvailable())
-                $parameters[$i] = $param->getDefaultValue();
-		}
-		
-		return $parameters;
+        $optionalParameters = array_merge($context->request->getCustomProperties(), $context->request->query);
+
+        return $this->container->getParametersFor(null, $reflectMethod, $optionalParameters);
 	}
 	
 	protected function createControllerInstance($context)

@@ -9,6 +9,7 @@ interface ILunaContainer
 	function getComponentNames();
 	function hasComponent($name, $localOnly = false);
 	function hasComponentFor($service, $localOnly = false);
+    function getParametersFor($instance, $function, $optionalParameters = null);
 }
 
 ?>
