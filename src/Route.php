@@ -1,20 +1,16 @@
 <?php
 
-class LunaRoute implements ILunaRoute, ILunaContainerAware
+class LunaRoute implements ILunaRoute
 {
-	private static $preMatchRequire = array("host" => true, "port" => true, "method" => true);
+	protected static $preMatchRequire = array("host" => true, "port" => true, "method" => true);
 	
 	protected $definition;
-	protected $for = array();	
-	protected $defaults = array();
-	protected $parameters = array();
-	protected $requires = array();
-	protected $dispatcherType;
-
-    /**
-     * @var $container ILunaContainer
-     */
-	protected $container;
+    
+	public $for = array();
+	public $defaults = array();
+	public $parameters = array();
+	public $requires = array();
+	public $dispatcherType;
 	
 	public function __construct($defaultDispatcherType, $definition)
 	{
@@ -43,11 +39,6 @@ class LunaRoute implements ILunaRoute, ILunaContainerAware
 			
 		if (isset($this->definition["parameters"]))
 			$this->parameters = $this->definition["parameters"];
-	}
-	
-	public function setContainer($container)
-	{
-		$this->container = $container;
 	}
 	
 	public function match($request)
@@ -117,7 +108,8 @@ class LunaRoute implements ILunaRoute, ILunaContainerAware
 			return false;
 				
 		foreach ($this->for as $for)
-		{			
+		{	
+            /** @var $for LunaRouteExpression */
 			if (($result = $for->reverse($parameters, $this->defaults)) !== false)
 			{
 				if (strlen($result) > 0 && $result[0] !== '/')

@@ -2,7 +2,7 @@
 
 class LunaException extends Exception
 {	
-	private $statusCode;
+	public $statusCode;
 	
 	public function __construct($message = "", $statusCode = 500, $code = 0, Exception $previous = null)
 	{

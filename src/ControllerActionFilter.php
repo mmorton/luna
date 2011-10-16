@@ -4,8 +4,8 @@ class LunaControllerActionFilter
 {
 	public $target;	
 	
-	private $onlyForActions = array();
-	private $exceptForActions = array();
+	public $onlyForActions = array();
+	public $exceptForActions = array();
 	
 	public function __construct($target)
 	{

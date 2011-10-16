@@ -6,9 +6,9 @@ include_once "Container.php";
 
 class LunaConfiguration implements ILunaConfiguration, ILunaInitializable
 {
-	private $config;
-	private $active;
-	private $environment;	
+	public $config;
+	public $active;
+	public $environment;
 	
 	public function __construct($config, $environment = "production", $forceInitialize = true)
 	{

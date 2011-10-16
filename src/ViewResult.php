@@ -2,8 +2,8 @@
 
 class LunaViewResult implements ILunaActionResult
 {
-	protected $view;
-	protected $layout;
+	public $view;
+	public $layout;
 	
 	public function __construct($view, $layout)
 	{

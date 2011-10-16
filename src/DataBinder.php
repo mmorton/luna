@@ -5,8 +5,8 @@ class LunaDataBinder implements ILunaDataBinder
 	/**
 	 * A collection of cached paths.  These are not type specific and only contain parsed path info.
 	 */
-	protected $pathCache = array();
-	protected $separator;
+	public $pathCache = array();
+	public $separator;
 	
 	public function __construct($separator = ".")
 	{

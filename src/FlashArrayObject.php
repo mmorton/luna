@@ -2,7 +2,7 @@
 
 class LunaFlashArrayObject extends ArrayObject
 {
-	private static $sessionKey = "__flash";
+	protected static $sessionKey = "__flash";
 	
 	public $forward = array();
 	

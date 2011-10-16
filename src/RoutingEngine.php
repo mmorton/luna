@@ -6,8 +6,8 @@ class LunaRoutingEngine implements ILunaRoutingEngine, ILunaContainerAware
      * @var $container ILunaContainer
      */
 	private $container;
-	private $defaultRouteType;
-	
+
+	public $defaultRouteType;
 	public $routes = array();
 	
 	function __construct($defaultRouteType)
@@ -25,16 +25,21 @@ class LunaRoutingEngine implements ILunaRoutingEngine, ILunaContainerAware
 		foreach ($routeDefinitions as $definition) $this->add($definition);
 	}
 
-    function add($route)
+    function add($route, $index = -1)
     {
         if ($route instanceof ILunaRoute)
-            $this->routes []= $route;
+            array_splice($this->routes, $index, 0, array($route));
         else
         {
             $routeType = isset($route["type"]) ? $route["type"] : $this->defaultRouteType;
             $routeInstance = $this->container->getComponentFor($routeType, false, array("definition" => $route));
-            if ($routeInstance) $this->routes[] = $routeInstance;
+            if ($routeInstance) array_splice($this->routes, $index, 0, array($routeInstance));
         }
+    }
+
+    function remove($index)
+    {
+        array_splice($this->routes, $index, 1);
     }
        
 	function find($request)

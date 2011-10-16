@@ -4,7 +4,7 @@ class LunaRouteExpression
 {
 	private static $pathSegmentSeparator = "/";
 	
-	private $pathSegments = array();
+	public $pathSegments = array();
 	
 	private static function escape($fragment) 
 	{

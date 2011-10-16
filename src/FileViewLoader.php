@@ -2,7 +2,7 @@
 
 class LunaFileViewLoader implements ILunaViewLoader
 {	
-	private $searchPaths = array();
+	public $searchPaths = array();
 	
 	function __construct($viewRoot = false, ILunaConfiguration $configuration = null) 
 	{

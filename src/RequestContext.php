@@ -17,7 +17,7 @@ class LunaRequestContext
 	public $raw;
 	public $rewrite;
 	
-	private $data = array();
+	public $data = array();
 	
 	function __get($name) 
 	{

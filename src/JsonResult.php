@@ -2,7 +2,7 @@
 
 class LunaJsonResult implements ILunaActionResult
 {
-	protected $data;
+	public $data;
 	
 	public function __construct($data)
 	{

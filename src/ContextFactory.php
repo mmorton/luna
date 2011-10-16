@@ -2,7 +2,7 @@
 
 class LunaContextFactory implements ILunaContextFactory
 {	
-	private $appUriRoot;
+	public $appUriRoot;
 	
 	function __construct($appUriRoot = false, ILunaConfiguration $configuration = null)
 	{		

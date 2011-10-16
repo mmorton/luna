@@ -10,5 +10,11 @@
             "action": "index",
             "id": ""
         }
+    },{
+        "for": "full/{controller}/{action}/{id}/{*other}",
+        "defaults": {
+            "action": "index",
+            "id": ""
+        }
     }]
 }

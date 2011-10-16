@@ -2,9 +2,9 @@
 
 class LunaRouteMatch implements ILunaRouteMatch
 {
-	private $route;
-	private $dispatcherType;
-	private $parameters;
+	public $route;
+	public $dispatcherType;
+	public $parameters;
 	
 	public function __construct($route, $dispatcherType, $parameters)
 	{

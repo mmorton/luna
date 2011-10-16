@@ -3,8 +3,9 @@
 abstract class LunaViewEngine implements ILunaViewEngine
 {
 	protected $resolveCache = array();
-	protected $viewLoader;
-	protected $viewPaths = array("{area}/{controller}/{view}", "{controller}/{view}", "{view}");
+    protected $viewLoader;
+    
+	public $viewPaths = array("{area}/{controller}/{view}", "{controller}/{view}", "{view}");
 		
 	public function __construct(ILunaViewLoader $loader, $viewPaths = array()) 
 	{			
