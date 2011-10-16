@@ -110,7 +110,7 @@ class LunaRoute implements ILunaRoute
 		foreach ($this->for as $for)
 		{	
             /** @var $for LunaRouteExpression */
-			if (($result = $for->reverse($parameters, $this->defaults)) !== false)
+			if (($result = $for->reverse($parameters, $this->defaults, $this->parameters)) !== false)
 			{
 				if (strlen($result) > 0 && $result[0] !== '/')
 					$result = '/'.$result;

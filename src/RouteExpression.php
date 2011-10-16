@@ -25,12 +25,37 @@ class LunaRouteExpression
 	public static function parse($expression)
 	{
 		$parsed = new LunaRouteExpression();
-		
-		foreach (explode(self::$pathSegmentSeparator, $expression) as $segment)
+
+        $segments = explode(self::$pathSegmentSeparator, $expression);
+
+		foreach ($segments as $j => $segment)
 		{
 			$fragments = preg_split('/\{(.+?)\}/', $segment, -1, PREG_SPLIT_DELIM_CAPTURE);
 			$format = $fragments; /* copy fragments */
-			$names = array();					
+			$names = array();
+
+            /*
+             * example: one{two}three => [one, two, three]
+             * example: {one} => ['', one, '']
+             * even: non-variables
+             * odd: variables
+             */
+
+            /* check for wildcard segment? */
+            if (count($fragments) == 3 && $fragments[1][0] == "*" && strlen($fragments[0]) == 0 && strlen($fragments[2]) == 0)
+            {
+                if ($j != count($segments) - 1) throw new Exception("The wildcard segment must be the last segment in the route.");
+
+                $pathSegment = new LunaRouteExpressionPathSegment();
+                $pathSegment->wildcard = true;
+                $pathSegment->format = "%s";
+                $pathSegment->names = array(substr($fragments[1], 1));
+
+                $parsed->pathSegments[] = $pathSegment;
+
+                /* break out since the wildcard segment must be the last. */
+                break;
+            }
 			
 			for ($i = 1; $i < count($fragments); $i += 2)
 			{
@@ -84,8 +109,17 @@ class LunaRouteExpression
 		
 			$inSegment = $inSegments[$i];		
 			$testSegment = $this->pathSegments[$i];
-			
-			if (preg_match($testSegment->regex, $inSegment, $match))
+
+            if ($testSegment->wildcard)
+            {
+                /* wildcard case, # of in segments >= # of test segments */
+                $value = implode(self::$pathSegmentSeparator, array_slice($inSegments, $i));
+                foreach ($testSegment->names as $name)
+                    $outParameters[$name] = $value;
+
+                return $outParameters;
+            }
+			elseif (preg_match($testSegment->regex, $inSegment, $match))
 			{
 				foreach ($testSegment->names as $name)
 					if (isset($match[$name]))
@@ -97,29 +131,50 @@ class LunaRouteExpression
 			}
 			else
 			{
-				foreach ($testSegment->names as $name)
-					if (is_array($defaults) && isset($defaults[$name]))
-						$outParameters[$name] = $defaults[$name];
-					else
-						return false;
+				if (count($testSegment->names) > 0)
+                {
+                    foreach ($testSegment->names as $name)
+                        if (is_array($defaults) && isset($defaults[$name]))
+                            $outParameters[$name] = $defaults[$name];
+                        else
+                            return false;
+                }
+                else
+                    return false;
 			}
 		}
-		
+
 		/* ensure any remaining segments have default values */
 		for ($i = $i; $i < count($this->pathSegments); $i++)
 		{
 			$testSegment = $this->pathSegments[$i];
-			foreach ($testSegment->names as $name)
-				if (is_array($defaults) && isset($defaults[$name]))
-					$outParameters[$name] = $defaults[$name];
-				else
-					return false;
+
+            if ($testSegment->wildcard)
+            {
+                /* wildcard case, # of in segments < # of test segments */
+                /* allows for defaults to be specified for segments in-between */
+                $value = implode(self::$pathSegmentSeparator, array_slice($inSegments, $i));
+                foreach ($testSegment->names as $name)
+                    $outParameters[$name] = $value;
+
+                return $outParameters;
+            }
+            elseif (count($testSegment->names) > 0)
+            {
+                foreach ($testSegment->names as $name)
+                    if (is_array($defaults) && isset($defaults[$name]))
+                        $outParameters[$name] = $defaults[$name];
+                    else
+                        return false;
+            }
+            else
+                return false;
 		}
 
 		return $outParameters;
 	}
 	
-	public function reverse(&$parameters, &$defaults)
+	public function reverse(&$parameters, &$defaults, &$explicit)
 	{
 		if (is_array($parameters) === false)
 			return false;
@@ -157,8 +212,7 @@ class LunaRouteExpression
 		$queryParameters = array();
 		foreach (array_keys($parameters) as $name)
 		{
-			if ($parametersMatched[$name])
-				continue;
+			if (isset($parametersMatched[$name]) || isset($explicit[$name])) continue;
 			
 			$queryParameters[] = urlencode($name)."=".urlencode($parameters[$name]);
 		}

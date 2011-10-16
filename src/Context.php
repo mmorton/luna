@@ -3,6 +3,9 @@
 class LunaContext
 {
     public $appRoot;
+    /**
+     * @var $view LunaViewContext
+     */
 	public $view;
     /**
      * @var $flash LunaFlashArrayObject
@@ -19,11 +22,11 @@ class LunaContext
      */
 	public $container;
     /**
-     * @var $request ILunaRequestContext
+     * @var $request LunaRequestContext
      */
     public $request;
     /**
-     * @var $response ILunaResponseContext
+     * @var $response LunaResponseContext
      */
 	public $response;
     /**

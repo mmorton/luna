@@ -5,13 +5,13 @@
         "viewRoot": "/views"
     },
     "routes": [{
-        "for": "{controller}/{action}/{id}",
-        "defaults": {
-            "action": "index",
-            "id": ""
+        "for": "test/{*other}",
+        "parameters": {
+            "controller": "Home",
+            "action": "wildcard"
         }
     },{
-        "for": "full/{controller}/{action}/{id}/{*other}",
+        "for": "{controller}/{action}/{id}",
         "defaults": {
             "action": "index",
             "id": ""

@@ -5,6 +5,7 @@ class LunaController implements ILunaContextAware
 	protected $beforeFilterList = array();
 	protected $afterFilterList = array();
 	protected $skipFilterList = array();
+    /** @var $context LunaContext */
 	protected $context;
 	protected $propertyBag;
 	protected $flash;

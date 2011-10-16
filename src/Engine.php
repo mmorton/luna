@@ -18,10 +18,6 @@ class LunaEngine
      * @var $routingEngine ILunaRoutingEngine
      */
     public $routingEngine;
-    /**
-     * @var $viewEngineManager ILunaViewEngineManager
-     */
-    public $viewEngineManager;
 	
 	public function __construct(ILunaConfiguration $configuration)
 	{
@@ -30,16 +26,12 @@ class LunaEngine
 	
 	public function initialize() 
 	{				
-		$this->createContainer();
-
-        $this->contextFactory = $this->container->getComponentFor("ILunaContextFactory");
-        $this->routingEngine = $this->container->getComponentFor("ILunaRoutingEngine");
-        $this->viewEngineManager = $this->container->getComponentFor("ILunaViewEngineManager");
-
-		$this->createRoutes();		
+		$this->initializeContainer();
+        $this->initializeCoreComponents();
+		$this->initializeRoutes();
 	}
 	
-	protected function createContainer() 
+	protected function initializeContainer()
 	{
 		$this->container = new LunaContainer();				
 		$this->container->addComponent(
@@ -64,8 +56,14 @@ class LunaEngine
 			foreach ($components as $name => $value)
 				$this->container->addComponent($name, $value);
 	}
+
+    protected function initializeCoreComponents()
+    {
+        $this->contextFactory = $this->container->getComponentFor("ILunaContextFactory");
+        $this->routingEngine = $this->container->getComponentFor("ILunaRoutingEngine");
+    }
 	
-	protected function createRoutes()
+	protected function initializeRoutes()
 	{
 		$this->routingEngine->load($this->configuration->getSection("routes"));
 	}
@@ -81,7 +79,7 @@ class LunaEngine
 	}
 	
 	protected function processContext($context)
-	{							
+	{
 		$context->route = $this->routingEngine->find($context->request);
 		if ($context->route === false)
 			return $this->raiseSystemError($context, 404, "No route.");
@@ -91,9 +89,7 @@ class LunaEngine
 		
 		try
 		{
-            /**
-             * @var $actionDispatcher ILunaActionDispatcher
-             */
+            /** @var $actionDispatcher ILunaActionDispatcher */
 			$actionDispatcher = $context->container->getComponentFor($context->route->getDispatcherType(), false, array("context" => $context));
 			
 			if ($actionDispatcher->canDispatch($context) === false)		
@@ -123,8 +119,10 @@ class LunaEngine
 				
 				return $this->sendResponse($context);
 			}															
-			
-			$context->response->content[] = $this->viewEngineManager->renderTemplate(
+
+            /** @var $viewEngineManager ILunaViewEngineManager */
+            $viewEngineManager = $context->container->getComponentFor("ILunaViewEngineManager");
+			$context->response->content[] = $viewEngineManager->renderTemplate(
 				$context,
 				$context->view->selectedView,
 				$context->view->selectedLayout
@@ -182,7 +180,7 @@ class LunaEngine
 		}
 	}
 	
-	function raiseSystemError($context, $code = 500, $message = false, $exception = false)
+	function raiseSystemError($context, $code = 500, $message = false, $exception = null)
 	{
 		if ($exception) error_log($exception->getMessage());				
 		

@@ -10,6 +10,6 @@ $engine->initialize();
 $engine->processRequest();
 $end = microtime(true);
 
-echo sprintf('<br />Whole: %.2f ms, %.2f s<br />', ($end-$start)*1000.0, ($end-$start));
+echo sprintf('<br />Complete: %.2f ms, %.2f s<br />', ($end-$start)*1000.0, ($end-$start));
 
 ?>

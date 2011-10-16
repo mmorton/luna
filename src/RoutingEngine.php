@@ -28,12 +28,12 @@ class LunaRoutingEngine implements ILunaRoutingEngine, ILunaContainerAware
     function add($route, $index = -1)
     {
         if ($route instanceof ILunaRoute)
-            array_splice($this->routes, $index, 0, array($route));
+            $index >= 0 ? array_splice($this->routes, $index, 0, array($route)) : array_push($this->routes, $route);
         else
         {
             $routeType = isset($route["type"]) ? $route["type"] : $this->defaultRouteType;
             $routeInstance = $this->container->getComponentFor($routeType, false, array("definition" => $route));
-            if ($routeInstance) array_splice($this->routes, $index, 0, array($routeInstance));
+            if ($routeInstance) $index >= 0 ? array_splice($this->routes, $index, 0, array($routeInstance)) : array_push($this->routes, $routeInstance);
         }
     }
 

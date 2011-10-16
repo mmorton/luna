@@ -18,6 +18,14 @@ class HomeController extends LunaController
     {
         echo $requestContext->path;
     }
+
+    function wildcard(LunaRequestContext $requestContext, $other)
+    {
+        echo "other: ${other}<br/>";
+
+        $routingEngine = $this->context->container->getComponentFor("ILunaRoutingEngine");
+        echo sprintf("reverse: %s<br>", $routingEngine->reverse($requestContext->data));
+    }
 }
 
 ?>
