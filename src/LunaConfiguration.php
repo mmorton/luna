@@ -1,9 +1,5 @@
 <?php
 
-include_once "Container.php";
-
-
-
 class LunaConfiguration implements ILunaConfiguration, ILunaInitializable
 {
 	public $config;

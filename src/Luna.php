@@ -12,13 +12,10 @@ class Luna
 	public static function load($type)
 	{	
 		$file = false;
-		if (strpos($type, 'ILuna') === 0)
-			$file = dirname(__FILE__).'/'.'I'.substr($type, 5).'.php';
-		else if (strpos($type, 'Luna') === 0)
-			$file = dirname(__FILE__).'/'.substr($type, 4).'.php';
+		if (strpos($type, 'ILuna') === 0 || strpos($type, 'Luna') === 0)
+			$file = dirname(__FILE__).'/'.$type.'.php';
 					
-		if ($file !== false && file_exists($file))
-			include_once $file; 
+		if ($file && file_exists($file)) include_once $file;
 	}
 	
 	public static function error($number, $message, $file, $line, $context)
