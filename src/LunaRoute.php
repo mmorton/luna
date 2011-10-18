@@ -44,11 +44,10 @@ class LunaRoute implements ILunaRoute
 	public function match($request)
 	{
 		/* early out for require statements that do not rely on expression */
-		foreach (array_keys(self::$preMatchRequire) as $key)
+		foreach (self::$preMatchRequire as $key => $value)
 		{
-			if (isset($this->requires[$key]))
-				if (preg_match($this->requires[$key], $request->$key) !== 1)
-					return false;
+			if (isset($this->requires[$key]) && !preg_match($this->requires[$key], $request->$key))
+                return false;
 		}		
 				
 		foreach ($this->for as $for)
@@ -64,13 +63,9 @@ class LunaRoute implements ILunaRoute
 			$requirementsPassed = true;	
 			foreach ($this->requires as $name => $regex)
 			{
-				if (isset($parameters[$name]) == false)
-				{
-					$requirementsPassed = false;
-					break;
-				}
-				
-				if (preg_match($regex, $parameters[$name]) !== 1)
+                if (isset(self::$preMatchRequire[$name])) continue;
+
+				if (!isset($parameters[$name]) || !preg_match($regex, $parameters[$name]))
 				{
 					$requirementsPassed = false;
 					break;
