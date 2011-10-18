@@ -66,7 +66,31 @@ class LunaContainer implements ILunaContainer
 			unset($this->componentInstances[$name]);		
 		}
 	}
-	
+
+    /**
+     * @param $name
+     * @param $definition A key/value array, an indexed array, an object instance, or a LunaComponentDefinition, describing the component.
+     * @param null $instance
+     * @return void
+     *
+     * Definition Properties:
+     * * `serviceType`: The service type (dependency type) of the component.  Can either be a string or an array.  If this parameter
+     *     is omitted, `serviceType` is set to `classType`.
+     *   * `string`: The class name only, or a string containing the class name and the relative file path, i.e.: `class name, file`.
+     *   * `array`: Must at least contain the class name at #0; #1 may contain the relative file path.
+     *
+     * * `classType`: The implementation type of the component.  Can either be a string or an array, like `serviceType`.  This
+     *     parameter is required.
+     *
+     * * `type`: Same as `classType`.
+     *
+     * * `singleton`: True if the component is a singleton, False otherwise.  By default, this value is false, except when the `$definition`
+     *     parameter is an object instance.
+     *
+     * * `create`: True if the singleton component should be created immediately, False otherwise.
+     *
+     * * `parameters`: An optional dictionary of named parameters for this component.
+     */
 	public function addComponent($name, $definition, $instance = null)
 	{				
 		if ($definition instanceof LunaComponentDefinition)
@@ -85,13 +109,13 @@ class LunaContainer implements ILunaContainer
 		{						
 			$config = $definition;
 			$definition = new LunaComponentDefinition();
-			$definition->isSingleton = (isset($config["singleton"]) && is_bool($config["singleton"])) ? $config["singleton"] : true;
+			$definition->isSingleton = isset($config["singleton"]) ? $config["singleton"] : false;
 			$definition->classType = isset($config["classType"]) ? $config["classType"] : $config["type"];			
 			$definition->class = LunaTypeUtility::loadType($definition->classType);
 			$definition->classReflect = new ReflectionClass($definition->class);
 			$definition->serviceType = isset($config["serviceType"]) ? $config["serviceType"] : $definition->classType;			
 			$definition->service = LunaTypeUtility::loadType($definition->serviceType);			
-			$definition->create = (isset($config["create"]) && is_bool($config["create"])) ? $config["create"] : false;
+			$definition->create = isset($config["create"]) ? $config["create"] : false;
 			
 			if (isset($config["parameters"]))
 				$definition->parameters = $config["parameters"];
@@ -103,7 +127,7 @@ class LunaContainer implements ILunaContainer
 		{
 			$type = $definition;
 			$definition = new LunaComponentDefinition();
-			$definition->isSingleton = true;
+			$definition->isSingleton = false;
 			$definition->classType = $type;
 			$definition->serviceType = $type;
 			$definition->class = LunaTypeUtility::loadType($definition->classType);
@@ -118,7 +142,7 @@ class LunaContainer implements ILunaContainer
 		{
 			$type = $definition;
 			$definition = new LunaComponentDefinition();
-			$definition->isSingleton = true;
+			$definition->isSingleton = false;
 			$definition->classType = $type;
 			$definition->serviceType = $type;
 			$definition->class = LunaTypeUtility::loadType($definition->classType);

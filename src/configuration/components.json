@@ -1,17 +1,16 @@
 {
     "contextFactory": {
         "serviceType": "ILunaContextFactory",
-        "classType": "LunaContextFactory"
+        "classType": "LunaContextFactory",
+        "singleton": true
     },
     "actionDispatcher": {
         "serviceType": "ILunaActionDispatcher",
-        "classType": "LunaActionDispatcher",
-        "singleton": false
+        "classType": "LunaActionDispatcher"
     },
     "standardRoute": {
         "serviceType": "ILunaRoute",
         "classType": "LunaRoute",
-        "singleton": false,
         "parameters": {
             "defaultDispatcherType": "ILunaActionDispatcher"
         }
@@ -19,14 +18,19 @@
     "routingEngine": {
         "serviceType": "ILunaRoutingEngine",
         "classType": "LunaRoutingEngine",
+        "singleton": true,
         "parameters": {
             "defaultRouteType": "ILunaRoute"
         }
     },
-    "templateViewEngine": "LunaTemplateViewEngine",
+    "templateViewEngine": {
+        "classType": "LunaTemplateViewEngine",
+        "singleton": true
+    },
     "viewEngineManager": {
         "serviceType": "ILunaViewEngineManager",
         "classType": "LunaViewEngineManager",
+        "singleton": true,
         "parameters": {
             "viewEngineTypes": ["LunaTemplateViewEngine"]
         }
@@ -35,6 +39,7 @@
     "viewLoader": {
         "serviceType": "ILunaViewLoader",
         "classType": "LunaChainedViewLoader",
+        "singleton": true,
         "parameters": {
             "viewLoaderTypes": ["LunaFileViewLoader"]
         }
