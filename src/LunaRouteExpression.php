@@ -61,6 +61,7 @@ class LunaRouteExpression
 			{
 				$name = $fragments[$i];
 				$next = false;
+                
 				if (($i + 1) < count($fragments))
 				{
 					if (strlen($fragments[$i + 1]) > 0)
@@ -68,6 +69,7 @@ class LunaRouteExpression
 				}
 								
 				$group = null;
+                
 				if ($next !== false)
 					$group = sprintf('(?<%s>[^%s]+)?', $name, self::escape($next));
 				else
@@ -85,7 +87,7 @@ class LunaRouteExpression
 				
 			$pathSegment = new LunaRouteExpressionPathSegment();
 			$pathSegment->format = implode("", $format);
-			$pathSegment->regex = '/'.implode("", $fragments).'/i';			
+			$pathSegment->regex = '/^'.implode("", $fragments).'$/i';
 			$pathSegment->names = $names;
 			
 			$parsed->pathSegments[] = $pathSegment;
